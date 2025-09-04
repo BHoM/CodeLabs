@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive presentation for onboarding regional experts to Code Labs prototyping and development initiatives">
+    <meta name="keywords" content="Code Labs, BHoM, prototyping, computational engineering, Buro Happold">
+    <title>Code Labs - Building a Network of Computational Champions</title>
+    <!-- Preload for better performance -->
+    <link rel="prefetch" href="public/placeholder-image.svg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #2d2d2d;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            overflow-x: hidden;
+        }
+
+        /* Sticky Navigation */
+        .nav-sticky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 20, 147, 0.2);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff1493, #ff4500, #ffa500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #2d2d2d;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: linear-gradient(135deg, #ff1493, #ff4500);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 20, 147, 0.3);
+        }
+
+        .progress-indicator {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .progress-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 20, 147, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background: #ff1493;
+            transform: scale(1.5);
+        }
+
+        .present-controls {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #ff1493, #ff4500);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(255, 20, 147, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 30px rgba(255, 20, 147, 0.4);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+            background: #ccc;
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .section-counter {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ff1493 0%, #ff4500 50%, #ffa500 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 100px;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 40px,
+                rgba(255, 255, 255, 0.05) 40px,
+                rgba(255, 255, 255, 0.05) 42px
+            );
+            animation: slide 30s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(-50%) translateY(-50%) rotate(0deg); }
+            100% { transform: translateX(-50%) translateY(-50%) rotate(360deg); }
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 900px;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand-header {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1rem;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 300;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Main Content Sections */
+        .main-content {
+            background: white;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section {
+            min-height: 100vh;
+            padding: 120px 2rem 5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 800;
+            color: #2d2d2d;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.3rem;
+            color: #666;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 20, 147, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff1493, #ff4500, #ffa500);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 60px rgba(255, 20, 147, 0.15);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d2d2d;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .card-description {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        /* Pipeline Section */
+        .pipeline-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding: 120px 2rem 5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .pipeline-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pipeline-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .pipeline-step {
+            background: linear-gradient(135deg, #ff1493, #ff4500, #ffa500);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .pipeline-step::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .pipeline-step:hover::before {
+            animation: shimmer 0.6s ease-out;
+            opacity: 1;
+        }
+
+        .pipeline-step:hover {
+            transform: translateY(-10px) scale(1.02);
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .step-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .step-description {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        /* Roles Section */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .role-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #ff1493, #ff4500, #ffa500);
+            border-radius: 20px;
+            padding: 3px;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            z-index: -1;
+        }
+
+        .role-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 60px rgba(255, 20, 147, 0.2);
+        }
+
+        .role-emoji {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .role-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2d2d2d;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .role-description {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        /* Call to Action Section */
+        .cta-section {
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 120px 2rem 5rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 60px,
+                rgba(255, 20, 147, 0.05) 60px,
+                rgba(255, 20, 147, 0.05) 62px
+            );
+        }
+
+        .cta-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-title {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+        }
+
+        .cta-description {
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.7;
+        }
+
+        .cta-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .action-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(255, 20, 147, 0.2);
+        }
+
+        .action-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #ffa500;
+            text-transform: uppercase;
+        }
+
+        .action-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        /* Highlight boxes */
+        .highlight-box {
+            background: linear-gradient(135deg, #ff1493, #ffa500);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.1) 10px,
+                rgba(255,255,255,0.1) 12px
+            );
+            animation: slide 20s linear infinite;
+        }
+
+        .highlight-stat {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 700;
+            margin: 0 0.5rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1a1a1a;
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .nav-links a {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .section {
+                padding: 100px 1rem 3rem 1rem;
+            }
+
+            .cards-grid, .pipeline-steps, .roles-grid, .cta-actions {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .present-controls {
+                bottom: 1rem;
+                right: 1rem;
+                gap: 0.5rem;
+            }
+
+            .control-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+
+            .section-counter {
+                bottom: 1rem;
+                left: 1rem;
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .progress-indicator {
+                display: none;
+            }
+
+
+            .hero-title {
+                font-size: 2.5rem !important;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem !important;
+            }
+
+            /* Enhance mobile card spacing */
+            .card, .role-card, .pipeline-step {
+                margin-bottom: 1rem;
+            }
+
+            /* Better mobile typography */
+            .section-title {
+                font-size: 2.2rem !important;
+            }
+
+            .section-subtitle {
+                font-size: 1.1rem !important;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Selection colors */
+        ::selection {
+            background: #ff1493;
+            color: white;
+        }
+
+
+        /* Enhanced card hover effects */
+        .card:hover, .role-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 30px 80px rgba(255, 20, 147, 0.2);
+        }
+
+        .pipeline-step:hover {
+            transform: translateY(-15px) scale(1.05);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Smooth transitions for better UX - more targeted */
+        .card, .role-card, .pipeline-step, .nav-link, .control-btn, .cta-button, .action-item {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+        }
+
+        /* Optimize scroll performance */
+        .hero-background {
+            will-change: transform;
+        }
+
+        /* Focus states for accessibility */
+        .nav-link:focus, .control-btn:focus, .cta-button:focus {
+            outline: 3px solid rgba(255, 20, 147, 0.5);
+            outline-offset: 2px;
+        }
+
+        /* Loading performance */
+        .section {
+            will-change: opacity, transform;
+        }
+
+        /* Section animations */
+        .section {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Navigation -->
+    <nav class="nav-sticky" id="stickyNav">
+        <div class="nav-content">
+            <div class="nav-logo">Code Labs</div>
+            <ul class="nav-links">
+                <li><a href="#hero" class="nav-link active">Start</a></li>
+                <li><a href="#vision" class="nav-link">Vision</a></li>
+                <li><a href="#pipeline" class="nav-link">Pipeline</a></li>
+                <li><a href="#roles" class="nav-link">Your Role</a></li>
+                <li><a href="#prototyping" class="nav-link">Prototyping</a></li>
+                <li><a href="#action" class="nav-link">Next Steps</a></li>
+            </ul>
+            <div class="progress-indicator">
+                <div class="progress-dot active" data-section="hero"></div>
+                <div class="progress-dot" data-section="vision"></div>
+                <div class="progress-dot" data-section="pipeline"></div>
+                <div class="progress-dot" data-section="roles"></div>
+                <div class="progress-dot" data-section="prototyping"></div>
+                <div class="progress-dot" data-section="action"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Presentation Controls -->
+    <div class="present-controls">
+        <button class="control-btn" id="prevBtn" title="Previous Section (← or Page Up)">‹</button>
+        <button class="control-btn" id="nextBtn" title="Next Section (→, Space, or Page Down)">›</button>
+    </div>
+
+    <!-- Section Counter -->
+    <div class="section-counter">
+        <span id="current-section">1</span> / <span id="total-sections">6</span>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero-section section visible">
+        <div class="hero-background"></div>
+        <div class="hero-content">
+            <div class="brand-header">Buro Happold – Computational Engineering</div>
+            <h1 class="hero-title">Building a Network of Computational Champions</h1>
+            <p class="hero-subtitle">"Come curious and build together" - Transform regional computational curiosity into global innovation through collaborative development and the power of BHoM</p>
+            <a href="#vision" class="cta-button">Begin the Journey</a>
+            <div style="margin-top: 2rem;">
+                <a href="#vision" style="color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 0.9rem; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 2px;">Skip to Vision →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        
+        <!-- Vision Section -->
+        <section id="vision" class="section">
+            <div class="section-header">
+                <h2 class="section-title">The Code Labs Movement</h2>
+                <p class="section-subtitle">From monthly drop-ins to a global network of computational innovation</p>
+            </div>
+            
+            <div class="cards-grid">
+                <div class="card">
+                    <span class="card-icon">🚀</span>
+                    <h3 class="card-title">From Concept to Reality</h3>
+                    <p class="card-description">Monthly drop-ins evolve into regional communities, transforming individual learning into collaborative innovation that scales globally.</p>
+                </div>
+                
+                <div class="card">
+                    <span class="card-icon">🔧</span>
+                    <h3 class="card-title">The BHoM Advantage</h3>
+                    <p class="card-description">Powerful framework + guided development = accelerated innovation. Your regional expertise amplified by proven computational infrastructure.</p>
+                </div>
+                
+                <div class="card">
+                    <span class="card-icon">🌍</span>
+                    <h3 class="card-title">Global Impact</h3>
+                    <p class="card-description">Computational champions in every region driving local solutions with global support, sharing knowledge and capabilities across offices.</p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3 style="font-size: 2rem; margin-bottom: 1rem; text-transform: uppercase;">Success Vision</h3>
+                <p style="font-size: 1.3rem; font-weight: 300; line-height: 1.7;">Regional Code Labs + Central Development Pipeline = <span style="font-weight: 700;">Local Innovation at Global Scale</span></p>
+            </div>
+        </section>
+
+        <!-- Pipeline Section -->
+        <section id="pipeline" class="pipeline-section section">
+            <div class="pipeline-container">
+                <div class="section-header">
+                    <h2 class="section-title">Your Gateway to Impact</h2>
+                    <p class="section-subtitle">Every great regional idea has a clear path from conception to global deployment</p>
+                </div>
+
+                <div class="pipeline-steps">
+                    <div class="pipeline-step">
+                        <div class="step-number">01</div>
+                        <h3 class="step-title">Idea Generation</h3>
+                        <p class="step-description">Identify regional pain points and BHoM framework opportunities that could scale globally</p>
+                    </div>
+                    
+                    <div class="pipeline-step">
+                        <div class="step-number">02</div>
+                        <h3 class="step-title">DevDocs Creation</h3>
+                        <p class="step-description">Transform ideas into user stories with clear implementation directions - your bridge to development</p>
+                    </div>
+                    
+                    <div class="pipeline-step">
+                        <div class="step-number">03</div>
+                        <h3 class="step-title">Workflow & Prioritization</h3>
+                        <p class="step-description">Fast-track regional needs through evaluation and roadmap integration with central team support</p>
+                    </div>
+                    
+                    <div class="pipeline-step">
+                        <div class="step-number">04</div>
+                        <h3 class="step-title">Collaborative Development</h3>
+                        <p class="step-description">GitHub integration, planning sessions, and continuous feedback loops throughout development</p>
+                    </div>
+                    
+                    <div class="pipeline-step">
+                        <div class="step-number">05</div>
+                        <h3 class="step-title">Deployment & Adoption</h3>
+                        <p class="step-description">Alpha/Beta rollouts with regional implementation support and success measurement</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 4rem; padding: 2rem; background: white; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+                    <h3 style="color: #ff1493; font-size: 1.8rem; margin-bottom: 1rem;">DevDocs: Your Key to Success</h3>
+                    <p style="font-size: 1.2rem; color: #666; line-height: 1.7;">
+                        <strong>User Story Framework:</strong> "As a [role], I need [capability] so that [outcome]"<br>
+                        <strong>Technical Context:</strong> BHoM integration points and dependencies<br>
+                        <strong>Implementation Guidance:</strong> Clear steps for the development team<br>
+                        <strong>Success Criteria:</strong> Measurable outcomes and value delivery
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Roles Section -->
+        <section id="roles" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Your Role as Regional Champions</h2>
+                <p class="section-subtitle">Bridge builders connecting local computational talent with global development capabilities</p>
+            </div>
+
+            <div class="roles-grid">
+                <div class="role-card">
+                    <span class="role-emoji">🎯</span>
+                    <h3 class="role-title">Local Evangelists</h3>
+                    <p class="role-description">Identify and nurture computational interest in your region, building excitement around collaborative development opportunities.</p>
+                </div>
+                
+                <div class="role-card">
+                    <span class="role-emoji">🔄</span>
+                    <h3 class="role-title">Needs Translators</h3>
+                    <p class="role-description">Transform regional engineering challenges into dev-ready concepts that align with BHoM framework capabilities.</p>
+                </div>
+                
+                <div class="role-card">
+                    <span class="role-emoji">🌉</span>
+                    <h3 class="role-title">Bridge Builders</h3>
+                    <p class="role-description">Connect local talent with central development pipeline, facilitating collaboration and knowledge transfer.</p>
+                </div>
+                
+                <div class="role-card">
+                    <span class="role-emoji">🚀</span>
+                    <h3 class="role-title">Implementation Partners</h3>
+                    <p class="role-description">Support tool adoption in your region and gather feedback to continuously improve global capabilities.</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 4rem; padding: 3rem; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 20px; text-align: center;">
+                <h3 style="color: #2d2d2d; font-size: 2rem; margin-bottom: 2rem;">Getting Started Checklist</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                    <div style="padding: 1.5rem; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                        <h4 style="color: #ff1493; margin-bottom: 1rem;">👥 Recruit Your Team</h4>
+                        <p style="color: #666;">Identify <span class="highlight-stat">2-3</span> computational champions per region</p>
+                    </div>
+                    <div style="padding: 1.5rem; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                        <h4 style="color: #ff1493; margin-bottom: 1rem;">📅 Schedule Sessions</h4>
+                        <p style="color: #666;">Monthly drop-ins aligned with global calendar</p>
+                    </div>
+                    <div style="padding: 1.5rem; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                        <h4 style="color: #ff1493; margin-bottom: 1rem;">💬 Communication Setup</h4>
+                        <p style="color: #666;">Regional Slack/Teams channels for coordination</p>
+                    </div>
+                    <div style="padding: 1.5rem; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                        <h4 style="color: #ff1493; margin-bottom: 1rem;">🎯 Focus Areas</h4>
+                        <p style="color: #666;">Define your region's computational priorities</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prototyping Section -->
+        <section id="prototyping" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Prototyping Made Simple</h2>
+                <p class="section-subtitle">Your fastest way to go from idea to prototype</p>
+            </div>
+
+            
+            <div class="cards-grid">
+                <div class="card">
+                    <!-- Replace with your sketch image: public/sketch-idea.jpg or public/sketch-idea.png -->
+                    <img src="public/sketch-idea.svg" alt="Sketch your idea" style="width: 120px; height: 90px; object-fit: cover; border-radius: 10px; margin: 0 auto 1.5rem; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    <h3 class="card-title">1. Sketch Your Idea</h3>
+                    <p class="card-description">Start with a simple sketch or wireframe of your concept. Capture the core problem you're solving and visualize the solution approach.</p>
+                </div>
+                
+                <div class="card">
+                    <!-- Replace with your devdocs image: public/devdocs.jpg or public/devdocs.png -->
+                    <img src="public/devdocs.svg" alt="Create DevDocs" style="width: 120px; height: 90px; object-fit: cover; border-radius: 10px; margin: 0 auto 1.5rem; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    <h3 class="card-title">2. Make a DevDoc</h3>
+                    <p class="card-description">Transform your idea into structured user stories and technical requirements. Define your integration points with BHoM framework.</p>
+                </div>
+                
+                <div class="card">
+                    <!-- Replace with your prototype repo image: public/prototype-repo.jpg or public/prototype-repo.png -->
+                    <img src="public/prototype-repo.svg" alt="Create prototype repository" style="width: 120px; height: 90px; object-fit: cover; border-radius: 10px; margin: 0 auto 1.5rem; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    <h3 class="card-title">3. Create Repo & Build</h3>
+                    <p class="card-description">Fork the BHoM template, set up your development environment, and start building your prototype with immediate testing feedback.</p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3 style="font-size: 2rem; margin-bottom: 1rem; text-transform: uppercase;">From Concept to Code</h3>
+                <p style="font-size: 1.3rem; font-weight: 300; line-height: 1.7;">With BHoM as your foundation, you can prototype computational solutions in <span style="font-weight: 700;">minutes to hours</span>, not months</p>
+            </div>
+
+        </section>
+
+        <!-- Call to Action Section -->
+        <section id="action" class="cta-section section">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Build Together?</h2>
+                <p class="cta-description">Leave here today as a regional Code Labs champion. Your mission: transform computational curiosity into collaborative innovation.</p>
+                
+                <div class="cta-actions">
+                    <div class="action-item">
+                        <h3 class="action-title">Before Next Session</h3>
+                        <div class="action-description">
+                            <strong>2 weeks to prepare:</strong><br><br>
+                            • Recruit 2-3 regional champions<br>
+                            • Prepare 1-2 DevDocs opportunities<br>
+                            • Assess regional computational needs<br>
+                            • Setup communication channels
+                        </div>
+                    </div>
+                    
+                    <div class="action-item">
+                        <h3 class="action-title">Next Session Focus</h3>
+                        <div class="action-description">
+                            <strong>"DevDocs Workshop"</strong><br><br>
+                            Working session with hands-on creation<br>
+                            Each region leaves with pipeline-ready DevDoc<br>
+                            Clear development priorities established
+                        </div>
+                    </div>
+                    
+                    <div class="action-item">
+                        <h3 class="action-title">Your Commitment</h3>
+                        <div class="action-description">
+                            <strong>Regional Activation:</strong><br><br>
+                            "I will activate a Code Labs community in my region and connect local computational needs to our global development capabilities."
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 4rem; padding: 3rem; background: rgba(255,255,255,0.1); border-radius: 20px; backdrop-filter: blur(20px);">
+                    <h3 style="color: #ffa500; font-size: 2rem; margin-bottom: 2rem;">Success Metrics</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center;">
+                        <div>
+                            <div style="font-size: 2.5rem; font-weight: 900; color: #ffa500; margin-bottom: 0.5rem;">2-3</div>
+                            <div style="color: rgba(255,255,255,0.9);">Champions per region</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2.5rem; font-weight: 900; color: #ffa500; margin-bottom: 0.5rem;">1+</div>
+                            <div style="color: rgba(255,255,255,0.9);">DevDoc per month</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2.5rem; font-weight: 900; color: #ffa500; margin-bottom: 0.5rem;">100%</div>
+                            <div style="color: rgba(255,255,255,0.9);">Regional participation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <h3 style="color: #ff1493; font-size: 2rem; margin-bottom: 1rem;">Code Labs</h3>
+            <p style="margin-bottom: 1rem; font-size: 1.2rem;">Building a Network of Computational Champions</p>
+            <p style="color: #888;">Contact <strong>Michael Hoehn</strong> for more information</p>
+            <p style="color: #888; margin-top: 2rem; opacity: 0.7;">Buro Happold – Computational Engineering</p>
+            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #333; opacity: 0.6;">
+                <p style="font-size: 0.9rem;">Navigate with arrow keys, space, or page up/down • Click sections in navigation</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Section management
+        const sections = ['hero', 'vision', 'pipeline', 'roles', 'prototyping', 'action'];
+        let currentSectionIndex = 0;
+        let isManualNavigation = false;
+
+        // DOM elements
+        const navLinks = document.querySelectorAll('.nav-link');
+        const progressDots = document.querySelectorAll('.progress-dot');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const currentSectionEl = document.getElementById('current-section');
+        const totalSectionsEl = document.getElementById('total-sections');
+        const sectionElements = sections.map(id => document.getElementById(id));
+
+        // Initialize
+        totalSectionsEl.textContent = sections.length;
+        updateUI();
+
+        // Navigation functions
+        function goToSection(index) {
+            if (index < 0 || index >= sections.length) return;
+            
+            isManualNavigation = true;
+            currentSectionIndex = index;
+            const targetSection = sections[currentSectionIndex];
+            
+            // Smooth scroll to section
+            document.getElementById(targetSection).scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+            
+            updateUI();
+            
+            // Reset manual navigation flag after scroll completes
+            setTimeout(() => {
+                isManualNavigation = false;
+            }, 1000);
+        }
+
+        function nextSection() {
+            if (currentSectionIndex < sections.length - 1) {
+                goToSection(currentSectionIndex + 1);
+            }
+        }
+
+        function prevSection() {
+            if (currentSectionIndex > 0) {
+                goToSection(currentSectionIndex - 1);
+            }
+        }
+
+        function updateUI() {
+            // Update section counter
+            currentSectionEl.textContent = currentSectionIndex + 1;
+            
+            // Update navigation links
+            navLinks.forEach((link, index) => {
+                link.classList.toggle('active', index === currentSectionIndex);
+            });
+            
+            // Update progress dots
+            progressDots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSectionIndex);
+            });
+            
+            // Update control buttons
+            prevBtn.disabled = currentSectionIndex === 0;
+            nextBtn.disabled = currentSectionIndex === sections.length - 1;
+        }
+
+        // Event listeners
+        prevBtn.addEventListener('click', prevSection);
+        nextBtn.addEventListener('click', nextSection);
+
+        // Navigation link clicks
+        navLinks.forEach((link, index) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                goToSection(index);
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch(e.code) {
+                case 'Space':
+                case 'ArrowRight':
+                case 'PageDown':
+                    e.preventDefault();
+                    nextSection();
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    prevSection();
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    goToSection(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    goToSection(sections.length - 1);
+                    break;
+                case 'Digit1':
+                case 'Digit2':
+                case 'Digit3':
+                case 'Digit4':
+                case 'Digit5':
+                case 'Digit6':
+                    e.preventDefault();
+                    const num = parseInt(e.code.slice(-1)) - 1;
+                    if (num < sections.length) goToSection(num);
+                    break;
+            }
+        });
+
+        // Scroll detection for automatic section updates
+        let ticking = false;
+        
+        function updateCurrentSection() {
+            // Don't update section during manual navigation
+            if (isManualNavigation) {
+                ticking = false;
+                return;
+            }
+            
+            const scrollPosition = window.scrollY + window.innerHeight / 2;
+            
+            let newCurrentIndex = 0;
+            sectionElements.forEach((section, index) => {
+                if (section && scrollPosition >= section.offsetTop) {
+                    newCurrentIndex = index;
+                }
+            });
+            
+            if (newCurrentIndex !== currentSectionIndex) {
+                currentSectionIndex = newCurrentIndex;
+                updateUI();
+            }
+            
+            ticking = false;
+        }
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(updateCurrentSection);
+                ticking = true;
+            }
+        });
+
+        // Intersection Observer for section animations
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '-50px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections except hero (already visible)
+        sectionElements.slice(1).forEach(section => {
+            if (section) observer.observe(section);
+        });
+
+        // Auto-presentation mode (optional - can be enabled)
+        let autoPresentMode = false;
+        let autoTimer;
+
+        function startAutoPresent() {
+            if (autoPresentMode) return;
+            autoPresentMode = true;
+            
+            autoTimer = setInterval(() => {
+                if (currentSectionIndex < sections.length - 1) {
+                    nextSection();
+                } else {
+                    stopAutoPresent();
+                }
+            }, 30000); // 30 seconds per section
+        }
+
+        function stopAutoPresent() {
+            autoPresentMode = false;
+            if (autoTimer) {
+                clearInterval(autoTimer);
+                autoTimer = null;
+            }
+        }
+
+        // Stop auto-present on user interaction
+        ['click', 'keydown', 'wheel'].forEach(event => {
+            document.addEventListener(event, stopAutoPresent, { once: true });
+        });
+
+        // Touch/swipe support for mobile
+        let touchStartY = 0;
+        let touchStartX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (!touchStartY || !touchStartX) return;
+            
+            const touchEndY = e.changedTouches[0].clientY;
+            const touchEndX = e.changedTouches[0].clientX;
+            const diffY = touchStartY - touchEndY;
+            const diffX = touchStartX - touchEndX;
+            
+            // Minimum swipe distance
+            if (Math.abs(diffY) < 50 && Math.abs(diffX) < 50) return;
+            
+            // Vertical swipes for section navigation
+            if (Math.abs(diffY) > Math.abs(diffX)) {
+                if (diffY > 0) {
+                    // Swipe up - next section
+                    nextSection();
+                } else {
+                    // Swipe down - previous section
+                    prevSection();
+                }
+            }
+            
+            touchStartY = 0;
+            touchStartX = 0;
+        });
+
+        // Prevent default scroll behavior during presentation mode navigation
+        let isNavigating = false;
+
+        function smoothNavigate(callback) {
+            if (isNavigating) return;
+            isNavigating = true;
+            callback();
+            setTimeout(() => isNavigating = false, 800);
+        }
+
+        // URL hash update
+        function updateHash() {
+            const newHash = sections[currentSectionIndex];
+            if (window.location.hash !== `#${newHash}`) {
+                history.replaceState(null, null, `#${newHash}`);
+            }
+        }
+
+        // Handle initial hash
+        window.addEventListener('load', () => {
+            const hash = window.location.hash.slice(1);
+            const index = sections.indexOf(hash);
+            if (index !== -1) {
+                currentSectionIndex = index;
+                updateUI();
+            }
+        });
+
+        // Update hash when section changes
+        const originalUpdateUI = updateUI;
+        updateUI = function() {
+            originalUpdateUI();
+            updateHash();
+        };
+
+        console.log('🚀 Code Labs Presentation Ready!');
+        console.log('📋 Navigation: Arrow keys, Space, Page Up/Down, or click navigation');
+        console.log('🎯 Direct access: Press 1-5 to jump to specific sections');
+        console.log('📱 Mobile: Swipe up/down to navigate sections');
+    </script>
+</body>
+</html>
